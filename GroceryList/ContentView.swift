@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import TipKit
 
 struct ContentView: View {
     
@@ -16,6 +17,24 @@ struct ContentView: View {
     @State private var item : String = ""
     
     @FocusState private var isFocused: Bool
+    
+    let buttonTip = ButtonTip()
+    
+    func setupTips() {
+        do {
+            try Tips.resetDatastore()
+            Tips.showAllTipsForTesting()
+            try Tips.configure([
+                .displayFrequency(.immediate)
+            ])
+        } catch {
+            print("Error initializing TipKit \(error.localizedDescription)")
+        }
+    }
+    
+    init() {
+        setupTips()
+    }
     
     func addEssentialFoods() {
         modelContext.insert(Item(title : "Milk", isCompleted : false))
@@ -63,8 +82,9 @@ struct ContentView: View {
                         Button {
                             addEssentialFoods()
                         } label : {
-                            Label("Essentials", systemImage: "carrot")
+                            Image(systemName: "carrot")
                         }
+                        .popoverTip(buttonTip)
                     }
                 }
             }
